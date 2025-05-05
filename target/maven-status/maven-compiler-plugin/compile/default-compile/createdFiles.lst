@@ -1,0 +1,10 @@
+com\example\dummyjson\service\ProductService.class
+com\example\dummyjson\config\SwaggerConfig.class
+com\example\dummyjson\config\WebClientConfig.class
+com\example\dummyjson\controller\ProductController.class
+com\example\dummyjson\dto\Product.class
+com\example\dummyjson\exception\InvalidProductDataException.class
+com\example\dummyjson\exception\ProductNotFoundException.class
+com\example\dummyjson\exception\ServiceUnavailableException.class
+com\example\dummyjson\exception\GlobalExceptionHandler.class
+com\example\dummyjson\DummyJsonClientApplication.class
