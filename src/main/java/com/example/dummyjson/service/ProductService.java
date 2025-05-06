@@ -1,9 +1,9 @@
 package com.example.dummyjson.service;
 
 import com.example.dummyjson.dto.Product;
+import com.example.dummyjson.dto.ProductsResponse;
 import com.example.dummyjson.exception.ProductNotFoundException;
 import com.example.dummyjson.exception.ServiceUnavailableException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -13,31 +13,32 @@ import reactor.core.publisher.Mono;
 public class ProductService {
 
     private final WebClient webClient;
-    private final String baseUrl;
 
-    public ProductService(
-            WebClient.Builder webClientBuilder,
-            @Value("${dummyjson.api.base-url}") String baseUrl) {
-        this.webClient = webClientBuilder.build();
-        this.baseUrl = baseUrl;
+    public ProductService(WebClient webClient) {
+        this.webClient = webClient;
     }
 
-    public Flux<Product> getAllProducts() {
+    public Flux<ProductsResponse> getAllProducts() {
         return webClient.get()
-                .uri(baseUrl + "/products")
+                .uri("/products")
                 .retrieve()
-                .bodyToFlux(Product.class)
+                .onStatus(status -> status.is4xxClientError(),
+                        response -> Mono.error(new ServiceUnavailableException("Requisição inválida")))
+                .onStatus(status -> status.is5xxServerError(),
+                        response -> Mono.error(new ServiceUnavailableException("Serviço DummyJSON indisponível")))
+                .bodyToFlux(ProductsResponse.class)
                 .onErrorResume(e -> Flux.error(new ServiceUnavailableException("Falha ao recuperar os produtos")));
     }
 
     public Mono<Product> getProductById(Long id) {
         return webClient.get()
-                .uri(baseUrl + "/products/{id}", id)
+                .uri("/products/{id}", id)
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError(),
                         response -> Mono.error(new ProductNotFoundException("Produto não encontrado com o ID: " + id)))
                 .onStatus(status -> status.is5xxServerError(),
-                        response -> Mono.error(new ServiceUnavailableException("Serviço DummyJSON indisponivel")))
-                .bodyToMono(Product.class);
+                        response -> Mono.error(new ServiceUnavailableException("Serviço DummyJSON indisponível")))
+                .bodyToMono(Product.class)
+                .onErrorResume(e -> Mono.error(new ServiceUnavailableException("Falha ao recuperar o produto")));
     }
 }

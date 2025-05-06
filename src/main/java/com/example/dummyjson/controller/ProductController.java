@@ -1,6 +1,7 @@
 package com.example.dummyjson.controller;
 
 import com.example.dummyjson.dto.Product;
+import com.example.dummyjson.dto.ProductsResponse;
 import com.example.dummyjson.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +24,10 @@ import reactor.core.publisher.Mono;
 
 @Tag(
         name = "Produtos",
-        description = "API para gerenciamento de produtos com operações completas de CRUD"
+        description = "API para consulta de produtos"
 )
 @RestController
+@Validated
 @RequestMapping("/api/products")
 public class ProductController {
 
@@ -36,7 +39,7 @@ public class ProductController {
 
     @Operation(
             summary = "Listar todos os produtos",
-            description = "Retorna uma lista paginada de todos os produtos disponíveis"
+            description = "Retorna uma lista paginada de todos os produtos disponiveis"
     )
     @ApiResponses({
             @ApiResponse(
@@ -54,7 +57,7 @@ public class ProductController {
             )
     })
     @GetMapping
-    public Mono<ResponseEntity<Flux<Product>>> getAllProducts() {
+    public Mono<ResponseEntity<Flux<ProductsResponse>>> getAllProducts() {
         return productService.getAllProducts()
                 .collectList()
                 .flatMap(products -> {
