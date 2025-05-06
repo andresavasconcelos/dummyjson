@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 public class Product {
 
@@ -20,6 +21,13 @@ public class Product {
 
     @NotNull
     private Double price;
+
+    public Product(long l, String s, String s1, int i) {
+    }
+
+    public Product() {
+        
+    }
 
     // Getters and Setters
 
@@ -53,5 +61,21 @@ public class Product {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(id, product.id) &&
+                Objects.equals(title, product.title) &&
+                Objects.equals(description, product.description) &&
+                Objects.equals(price, product.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, description, price);
     }
 }
